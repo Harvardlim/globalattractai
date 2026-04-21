@@ -1,0 +1,97 @@
+name: iOS TestFlight Deploy
+on: [push]
+
+# permissions:
+#   contents: write
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Setup Environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          
+      - name: Install Dependencies
+        run: |
+          npm config set legacy-peer-deps true
+          npm install
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Capacitor Sync
+        run: npx cap sync ios
+
+      # 2. Install Apple Certificates & Profiles
+      - name: Import Signing Certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.P12_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          # Use the exact App ID as the filename
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/com.globalattract.globalattractai.mobileprovision
+
+      # 3. Build & Archive
+      - name: Build App
+        run: |
+          # Create the build directory first to be safe
+          mkdir -p build
+
+          xcodebuild -workspace ios/App/App.xcodeproj/project.xcworkspace \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath $PWD/build/App.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO 
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath $PWD/build/App.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath $PWD/build
+
+      - name: Upload IPA as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GlobalAttract-Build
+          path: build/*.ipa
+          retention-days: 7 # Keeps it for 1 week to save space
+
+      # 5. Upload to TestFlight
+      # - name: Upload to TestFlight
+      #   uses: apple-actions/upload-testflight-build@v3
+      #   with:
+      #     # Point this to the actual file found in the 'Check IPA' step
+      #     app-path: build/App.ipa 
+      #     issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      #     api-private-key: ${{ secrets.APP_STORE_CONNECT_P8_KEY }}
+      #   env:
+      #     ITMSTRANSPORTER_FORCE_ITMS_PACKAGE_UPLOAD: true
+
+      # - name: Upload to TestFlight (Manual Notary)
+      #   run: |
+      #     xcrun notarytool submit build/App.ipa \
+      #       --apple-id "globalatttract1319@gmail.com" \
+      #       --password "odiu-ykxp-hnlf-gvxt" \
+      #       --team-id "${{ secrets.APPLE_TEAM_ID }}" \
+      #       --wait
+
+      # - name: Upload to TestFlight
+      #   uses: apple-actions/upload-testflight-build@v3
+      #   with:
+      #     app-path: 'build/App.ipa'
+      #     issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+      #     api-private-key: ${{ secrets.APPSTORE_P8_KEY }}

@@ -1,0 +1,2 @@
+ALTER TABLE public.membership_orders DROP CONSTRAINT membership_orders_tier_check;
+ALTER TABLE public.membership_orders ADD CONSTRAINT membership_orders_tier_check CHECK (tier = ANY (ARRAY['vip'::text, 'vip_plus'::text, 'subscriber'::text]));

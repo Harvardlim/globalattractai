@@ -1,0 +1,1 @@
+ALTER TYPE public.feature_package ADD VALUE IF NOT EXISTS 'real_estate';

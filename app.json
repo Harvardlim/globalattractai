@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "aaa23317-9bd3-4b89-ae0e-189df959390f"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.globalattract.globalattractai",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.globalattract.globalattractai"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+UPDATE user_roles SET role = 'superadmin' WHERE user_id = 'bd38a3c0-a54f-4c24-828e-142aab83aa15';

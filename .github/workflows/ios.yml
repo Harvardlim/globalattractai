@@ -1,0 +1,55 @@
+# name: Deploy to TestFlight
+# on: [push]
+#   # push:
+#   #   branches: [ main ]
+
+# jobs:
+#   deploy:
+#     runs-on: macos-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+
+#       #   # ADD THE FIX HERE
+#       # - name: Fix Windows Paths in Package.swift
+#       #   run: |
+#       #     sed -i '' 's/..\\..\\..\\node_modules/..\/..\/..\/node_modules/g' ios/App/CapApp-SPM/Package.swift
+#       #     sed -i '' 's/\\@capacitor/\/@capacitor/g' ios/App/CapApp-SPM/Package.swift
+
+#       - name: Setup Xcode
+#         uses: maxim-lobanov/setup-xcode@v1
+#         with:
+#           xcode-version: 'latest'
+
+#       # This action handles the 'No-Mac' certificate hurdle for you
+#       - name: Install Apple Certificates
+#         uses: apple-actions/import-codesign-certs@v3
+#         with:
+#           p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }} # See Note below
+#           p12-password: ${{ secrets.P12_PASSWORD }}
+
+#       # 3. Build & Archive
+#       - name: Build App
+#         run: |
+#           xcodebuild -workspace ios/App/App.xcodeproj/project.xcworkspace \
+#             -scheme App \
+#             -sdk iphoneos \
+#             -configuration Release \
+#             -archivePath $PWD/build/App.xcarchive \
+#             archive \
+#             CODE_SIGNING_ALLOWED=NO 
+
+#       - name: Export IPA
+#         run: |
+#           xcodebuild -exportArchive \
+#             -archivePath $PWD/build/MyApp.xcarchive \
+#             -exportOptionsPlist exportOptions.plist \
+#             -exportPath $PWD/build
+
+#       - name: Upload to TestFlight
+#         uses: apple-actions/upload-testflight-build@v3
+#         with:
+#           app-path: build/MyApp.ipa
+#           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+#           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+#           api-private-key: ${{ secrets.APPSTORE_P8_KEY }}

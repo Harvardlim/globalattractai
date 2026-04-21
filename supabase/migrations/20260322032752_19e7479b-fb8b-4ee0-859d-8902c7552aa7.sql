@@ -1,0 +1,1 @@
+ALTER TABLE public.feature_controls ADD COLUMN admin_bypass boolean NOT NULL DEFAULT true;

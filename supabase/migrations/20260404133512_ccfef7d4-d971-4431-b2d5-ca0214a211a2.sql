@@ -1,0 +1,1 @@
+ALTER TYPE public.referral_tier ADD VALUE IF NOT EXISTS 'member' BEFORE 'promoter';

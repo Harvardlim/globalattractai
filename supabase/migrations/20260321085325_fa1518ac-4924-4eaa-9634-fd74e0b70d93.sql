@@ -1,0 +1,1 @@
+ALTER TYPE public.member_tier ADD VALUE IF NOT EXISTS 'subscriber';

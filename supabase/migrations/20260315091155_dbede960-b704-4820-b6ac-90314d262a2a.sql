@@ -1,0 +1,1 @@
+UPDATE feature_controls SET disabled_message = '' WHERE disabled_message IS NOT NULL;
