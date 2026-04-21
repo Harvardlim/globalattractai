@@ -1,5 +1,8 @@
 {
   "expo": {
+    "name": "Global Attract AI",
+    "slug": "globalattractai",
+    "version": "1.0.0",
     "extra": {
       "eas": {
         "projectId": "aaa23317-9bd3-4b89-ae0e-189df959390f"
@@ -13,6 +16,10 @@
     },
     "android": {
       "package": "com.globalattract.globalattractai"
-    }
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-router" 
+    ]
   }
 }
