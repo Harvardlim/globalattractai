@@ -14,7 +14,7 @@
     "production": {
       "environment": "production",
       "ios": {
-        "distribution": "store"
+        "image": "latest" 
       },
       "env": {
         "VITE_SUPABASE_URL": "https://lspjiypmdhltihqoaxnu.supabase.co"
